@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const port = 3000
+const authRoutes=require('./routes/authroutes')
 
 
 app.get('/', (req, res) => {
