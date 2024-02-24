@@ -1,6 +1,7 @@
 let success_function = require('../utils/response-handler').success_function;
 let error_function = require('../utils/response-handler').error_function;
-const users=require('../db/user');
+const users=require('../db/models/users');
+
 
 
 exports.login = async function (req, res) {
@@ -9,6 +10,8 @@ exports.login = async function (req, res) {
     try {
         let email = req.body.email;
         let password = req.body.password;
+        
+
 
         if (email && password) {
             let user = await users.findOne({
@@ -79,7 +82,7 @@ exports.login = async function (req, res) {
     } catch (error) {
         if (process.env.NODE_ENV == "production") {
             let response = error_function({
-                status: 400,
+                statusCode: 400,
                 message: error
                     ? error.message
                         ? error.message

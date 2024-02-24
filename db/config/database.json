@@ -1,0 +1,37 @@
+
+
+{
+  "development": {
+    "database": {
+      "url": "mongodb://127.0.0.1:27017/hrm",
+      "options": {
+        "useNewUrlParser": true
+      }
+    }
+  },
+  "test": {
+    "database": {
+      "url": "mongodb://127.0.0.1:27017/hrm",
+      "options": {
+        "useNewUrlParser": true
+        
+      }
+    }
+  },
+  "production": {
+    "database": {
+      "protocol": "mongodb",
+      "username": "root",
+      "password": "password",
+      "name": "database_production",
+      "host": "localhost",
+      "url":  "mongodb://127.0.0.1:27017/hrm",
+      "port": "",
+      
+      "options": {
+        "useNewUrlParser": true
+       
+      }
+    }
+  }
+}
