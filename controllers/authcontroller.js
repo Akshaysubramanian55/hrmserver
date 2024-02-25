@@ -1,7 +1,10 @@
 let success_function = require('../utils/response-handler').success_function;
 let error_function = require('../utils/response-handler').error_function;
 const users=require('../db/models/users');
-
+let jwt =require('jsonwebtoken');
+let bcrypt=require('bcryptjs');
+let dotenv=require('dotenv');
+dotenv.config();
 
 
 exports.login = async function (req, res) {
@@ -24,26 +27,26 @@ exports.login = async function (req, res) {
                 return;
             }
 
-            if (user) {
-                bcrypt.compare(password, user.password, async (error, auth) => {
+            
+        if(user){
+            let db_password=user.password;
+            console.log("db_password : ",db_password);
 
-                    if (auth === true) {
-                        let access_token = jwt.sign(
-                            { user_id: user_id },
-                            process.env.PRIVATE_KEY,
-                            { expiresIn: "10d" }
-                        );
-                        let response = success_function({
-                            status: 200,
-                            data: access_token,
-                            message: "Login successful"
-                        });
-                        response.user_type = user_type;
-                        res.status(response.statusCode).send(response);
-                        return;
-                    } else {
+            bcrypt.compare(password,db_password,(err,auth)=>{
+                if(auth===true){
+                    let access_token=jwt.sign({user_id:user.user_id},process.env.PRIVATE_KEY,{expiresIn :"1d"});
+                    console.log("access_token : ",access_token);
+    
+                    let response=success_function({
+                        statusCode:200,
+                        data:access_token,
+                        message:"Login Successfull",
+                    });
+                    res.status(response.statusCode).send(response);
+                    return;
+                } else {
                         let response = error_function({
-                            status: 401,
+                            statusCode: 401,
                             message: "invalid credentials"
                         });
                         res.status(response.statusCode).send(response);
@@ -53,7 +56,7 @@ exports.login = async function (req, res) {
                 });
             } else {
                 let response = error_function({
-                    status: 401,
+                    statusCode: 401,
                     message: "invalid Credentials"
                 });
                 res.status(response.statusCode).send(response);
@@ -63,7 +66,7 @@ exports.login = async function (req, res) {
         } else {
             if (!email) {
                 let response = error_function({
-                    status: 422,
+                    statusCode: 422,
                     message: "email is required"
                 });
                 res.status(response.statusCode).send(response);
@@ -72,7 +75,7 @@ exports.login = async function (req, res) {
 
             if (!password) {
                 let response = success_function({
-                    status: 422,
+                    statusCode: 422,
                     message: "password required"
                 });
                 res.status(response.statusCode).send(response);
