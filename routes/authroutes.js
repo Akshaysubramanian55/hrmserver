@@ -4,6 +4,6 @@ const router=express.Router();
 const authController=require('../controllers/authcontroller');
 const checkLogin =require('../utils/checklogin').checkLogin;
 
-router.post('/login',checkLogin,authController.login);
+router.post('/login',authController.login);
 
 module.exports = router;
