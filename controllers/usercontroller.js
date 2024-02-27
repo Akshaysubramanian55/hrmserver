@@ -58,20 +58,20 @@ exports.addUser=async function(req,res){
                 data:new_user,
                 message:"success"
             });
-            res.status(response.statusCode).send(response.message)
+            res.status(response.statusCode).send(response)
         }else{
             response=error_function({
                 statusCode:400,
                 message:"failed"
             });
-            res.status(response.statusCode).send(response.message)
+            res.status(response.statusCode).send(response)
         }
     } catch (error) {
         let response=error_function({
             statusCode:400,
             message:"user creation failed"
         });
-        res.status(response.statusCode).send(response.message)
+        res.status(response.statusCode).send(response)
     }
 }
 
