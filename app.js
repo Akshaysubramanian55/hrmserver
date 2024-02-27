@@ -5,6 +5,7 @@ const app = express();
 
 const cors = require("cors");
 const authRoutes = require('./routes/authroutes');
+const userRoutes=require('./routes/userroutes');
 const connect = require("./db/models/config");
 
 dotenv.config();
@@ -24,6 +25,7 @@ app.use(express.json());
 
 // Mount authentication routes
 app.use(authRoutes);
+app.use(userRoutes);
 
 // Serve static files
 console.log("__dirname", __dirname);
