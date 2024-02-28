@@ -81,24 +81,27 @@ exports.getuser = async function (req, res) {
         const allUsers = await users.find();
         if (allUsers && allUsers.length > 0) {
             // Sending response with users if found
-            res.status(200).json({
+            const response = {
                 statusCode: 200,
                 message: "Success",
                 data: allUsers
-            });
+            };
+            res.status(200).send(response);
         } else {
             // Sending error response if no users found
-            res.status(404).json({
+            const response = {
                 statusCode: 404,
                 message: "No users found"
-            });
+            };
+            res.status(404).send(response);
         }
     } catch (error) {
         // Sending internal server error response if any error occurs
         console.error("Error fetching users:", error);
-        res.status(500).json({
+        const response = {
             statusCode: 500,
             message: "Internal server error"
-        });
+        };
+        res.status(500).send(response);
     }
 }
