@@ -26,6 +26,7 @@ app.use(express.json());
 // Mount authentication routes
 app.use(authRoutes);
 app.use(userRoutes);
+app.use('/getuser', userRoutes);
 
 // Serve static files
 console.log("__dirname", __dirname);

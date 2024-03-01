@@ -105,3 +105,22 @@ exports.getuser = async function (req, res) {
         res.status(500).send(response);
     }
 }
+
+exports.router= async function (req, res)  {
+    try {
+        const userId = req.params.userId;
+        const user = await users.findById(userId); // Assuming you're using Mongoose for MongoDB
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // If user found, return user details
+        res.json(user);
+    } catch (error) {
+        console.error('Error fetching user details:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+
