@@ -121,5 +121,41 @@ exports.router= async function (req, res)  {
         res.status(500).json({ error: 'Server error' });
     }
 };
+exports.Updateuser=async function(req,res){
+
+
+    const userId = req.params.userId;
+    const userData = req.body;
+
+
+
+    try {
+               const updateuser=await users.findByIdAndUpdate(userId,userData,{ new: true });
+
+               if (updateuser) {
+                // Sending response with updated user
+                const response = {
+                    statusCode: 200,
+                    message: "User updated successfully",
+                    data: updateuser
+                };
+                res.status(200).send(response);
+            } else {
+                // Sending error response if user not found
+                const response = {
+                    statusCode: 404,
+                    message: "User not found"
+                };
+                res.status(404).send(response);
+            }
+    } catch (error) {
+        console.error("Error updating user:", error);
+        const response = {
+            statusCode: 500,
+            message: "Internal server error"
+        };
+        res.status(500).send(response);
+    }
+}
 
 

@@ -27,6 +27,7 @@ app.use(express.json());
 app.use(authRoutes);
 app.use(userRoutes);
 app.use('/getuser', userRoutes);
+app.use('/updateuser',userRoutes)
 
 // Serve static files
 console.log("__dirname", __dirname);
