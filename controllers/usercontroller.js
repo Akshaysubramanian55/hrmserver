@@ -11,11 +11,19 @@ exports.addUser = async function (req, res) {
     try {
 
         const name = req.body.name;
+
+        //Name Validation
+
+        
+
         const email = req.body.email;
         const password = req.body.password;
         const phonenumber = req.body.phonenumber;
         const Address = req.body.Address;
         const pincode = req.body.pincode;
+
+
+
 
         const isUserExist = await users.findOne({ email });
         console.log("isUserExist : ", isUserExist);
