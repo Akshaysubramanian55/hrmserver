@@ -17,22 +17,22 @@ module.exports=async function validateadduser(data){
 
 
     if(validator.isEmpty(data.name)){
-      errors.name_empty("Name is required")
+      errors.name("Name is required")
     }
 
-    if(validator.isAlpha(data.name)){
+    if(!validator.isAlpha(data.name)){
         errors.name("Name can only have alphabets")
     }
-    if(validator.isLength(data.name,{min:6,max:30})){
+    if(!validator.isLength(data.name,{min:6,max:30})){
         errors.name("name must be between 6 and 30")
     }
 
 
     if (validator.isEmpty(data.email)){
-        errors.email_empty("Email is required")
+        errors.email("Email is required")
     }
 
-    if (validator.isEmail(data.email)){
+    if (!validator.isEmail(data.email)){
         errors.email("Email is Invalid")
     }
 
@@ -45,5 +45,18 @@ module.exports=async function validateadduser(data){
         errors.email("email must be unique")
     }
 
-    
+    if(!validator.isNumeric(data.phonenumber)){
+        errors.phonenumber("Invalid PhoneNumber")
+    }
+
+    if(validator.isEmpty(data.Address)){
+        errors.Address("Address is required")
+    }
+
+    if(validator.isEmpty(data.pincode)){
+        errors.pincode("Pincode is Required")
+    }
+
+   
+    return errors;
 }
