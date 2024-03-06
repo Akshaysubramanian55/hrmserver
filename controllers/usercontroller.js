@@ -18,67 +18,85 @@ exports.addUser = async function (req, res) {
                console.log(req.body)
             
          
-            const isValid = await validateadduser(req.body);
-            c
+            const {userValid,usererrors }= await validateadduser(req.body);
+            
+            console.log("userinvalid",userValid);
+            console.log("usererror",usererrors)
 
-            if (!isValid) {
+
+            
+
+            if (!userValid ) {
                 let response = error_function({
                     statusCode: 400,
-                    message: 'Invalid user data',
+                    message:"Validation error",
                    
                 });
+                response.errors = usererrors;
                 res.status(response.statusCode).send(response);
                 return;
+            }else{
+                if (phonenumber.length !== 10) {
+                    let response = error_function({
+                        statusCode: 400,
+                        message: ' phone number should be 10 digits.'
+                    });
+                    res.status(response.statusCode).send(response);
+                    return;
+                }
+              
+    
+                if(pincode.length !==6){
+                    let response = error_function({
+                        statusCode: 400,
+                        message: ' pincode should be 6 digits.'
+                    });
+                    res.status(response.statusCode).send(response);
+                    return;
+                }
+        
+                const isUserExist = await users.findOne({ email });
+                if (isUserExist) {
+                    let response = error_function({
+                        statusCode: 400,
+                        message: 'User already exists'
+                    });
+                    res.status(response.statusCode).send(response.message);
+                    return;
+                }
+        
+                const salt = await bcrypt.genSalt(10);
+                const hashed_password = bcrypt.hashSync(password, salt);
+        
+                // Creating new user
+                const new_user = await users.create({
+                    name,
+                    email,
+                    password: hashed_password,
+                    phonenumber,
+                    Address,
+                    pincode
+                });
+        
+                if (new_user) {
+                    let response = success_function({
+                        statusCode: 201,
+                        data: new_user,
+                        message: 'User created successfully'
+                    });
+                    res.status(response.statusCode).send(response);
+                } else {
+                    let response = error_function({
+                        statusCode: 400,
+                        message: 'Failed to create user'
+                    });
+                    res.status(response.statusCode).send(response);
+                }
             }
            
           
            
-            if (phonenumber.length !== 10) {
-                let response = error_function({
-                    statusCode: 400,
-                    message: ' phone number should be 10 digits.'
-                });
-                res.status(response.statusCode).send(response);
-                return;
-            }
-    
-            const isUserExist = await users.findOne({ email });
-            if (isUserExist) {
-                let response = error_function({
-                    statusCode: 400,
-                    message: 'User already exists'
-                });
-                res.status(response.statusCode).send(response.message);
-                return;
-            }
-    
-            const salt = await bcrypt.genSalt(10);
-            const hashed_password = bcrypt.hashSync(password, salt);
-    
-            // Creating new user
-            const new_user = await users.create({
-                name,
-                email,
-                password: hashed_password,
-                phonenumber,
-                Address,
-                pincode
-            });
-    
-            if (new_user) {
-                let response = success_function({
-                    statusCode: 201,
-                    data: new_user,
-                    message: 'User created successfully'
-                });
-                res.status(response.statusCode).send(response);
-            } else {
-                let response = error_function({
-                    statusCode: 400,
-                    message: 'Failed to create user'
-                });
-                res.status(response.statusCode).send(response);
-            }
+           
         } catch (error) {
             let response = error_function({
                 statusCode: 400,
