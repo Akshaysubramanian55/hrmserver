@@ -49,8 +49,11 @@ module.exports = async function validateadduser(data) {
     if (validator.isEmpty(data.password)) {
         errors.password_empty="Password is required"
     }
+ 
 
-
+    if (validator.isEmpty(data.phonenumber)) {
+        errors.phonenumber_empty="PhoneNumber Required"
+    }
     if (!validator.isNumeric(data.phonenumber)) {
         errors.phonenumber="Invalid PhoneNumber"
     }
