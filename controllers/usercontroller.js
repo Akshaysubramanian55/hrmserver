@@ -36,6 +36,11 @@ exports.addUser = async function (req, res) {
                 res.status(response.statusCode).send(response);
                 return;
             }else{
+
+               let user_type_id="65e9929396df220728517706"
+
+                console.log(user_type_id)
+
                 if (phonenumber.length !== 10) {
                     let response = error_function({
                         statusCode: 400,
@@ -75,8 +80,10 @@ exports.addUser = async function (req, res) {
                     password: hashed_password,
                     phonenumber,
                     Address,
-                    pincode
+                    pincode,
+                    user_type: user_type_id
                 });
+                
         
                 if (new_user) {
                     let response = success_function({

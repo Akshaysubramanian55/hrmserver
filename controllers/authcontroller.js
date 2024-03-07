@@ -32,6 +32,8 @@ exports.login = async function (req, res) {
                 errors.password_empty = "Password is required";
             }
 
+
+
             return {
                 userValid: isEmpty(errors),
                 usererrors: errors,
@@ -58,7 +60,10 @@ exports.login = async function (req, res) {
                 });
 
                 if (!user) {
-                    let response = error_function({ status: 400, message: "Invalid Email" });
+                    let response = error_function({ 
+                        statusCode: 400, 
+                        message: "No User Found",
+                     });
                     res.status(response.statusCode).send(response);
                     return;
                 }
