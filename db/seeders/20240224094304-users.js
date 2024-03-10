@@ -12,7 +12,8 @@ module.exports = {
         phonenumber:"8606570103",
         Address:"pallath(h),cheranallooor p.o,cheranallor",
         pincode:"683544",
-        password:"$2y$10$PCppS.lE13Gp5zn60sQyYuVdgI8N2WyWH8fjJRjS2q6stFwKQZTXO"//123654789
+        password:"$2y$10$PCppS.lE13Gp5zn60sQyYuVdgI8N2WyWH8fjJRjS2q6stFwKQZTXO",//123654789
+        user_type:"65e9927f96df220728517705"
       },
       {
          _id:"65d9c2929f9dfda2f46d8b7e",
@@ -21,7 +22,9 @@ module.exports = {
          phonenumber:"1234567890",
          Address:"House Number:106,kaloor,Ernakulam",
          pincode:"684044",
-         password:"$2y$10$p0N2aqF6HRlRqrbf6hADT.pPs6Wtmi/OkVpndqAVDU60uVtnmIp9e"//john@123
+         password:"$2y$10$p0N2aqF6HRlRqrbf6hADT.pPs6Wtmi/OkVpndqAVDU60uVtnmIp9e",//john@123
+         user_type:"65e9927f96df220728517705"
+
       }
     ])
     /*

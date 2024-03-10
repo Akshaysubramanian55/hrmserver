@@ -6,6 +6,8 @@ const success_function = require('../utils/response-handler').success_function;
 const error_function = require('../utils/response-handler').error_function;
 const validateadduser = require('../vallidation/adduser_validation');
 
+const jwtBlacklist = [];
+
 exports.addUser = async function (req, res) {
 
     
@@ -198,4 +200,14 @@ exports.Updateuser = async function (req, res) {
     }
 }
 
+// exports.userlogout=async function(req,res){
+//     const token = req.headers.authorization?.split(" ")[1]; // Extract JWT token from request headers
+//     if (token) {
+//         // Add token to blacklist
+//         jwtBlacklist.push(token);
+//         res.json({ message: 'Logout successful' });
+//     } else {
+//         res.status(401).json({ message: 'Unauthorized' });
+//     }
+// }
 
