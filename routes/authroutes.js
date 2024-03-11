@@ -8,6 +8,7 @@ const accesscontrol=require("../utils/accesscontol").accesscontrol
 const setAccessControl = (access_type) => {
     return (req, res, next) => {
         accesscontrol(access_type, req, res, next);
+        
     }
 };
 

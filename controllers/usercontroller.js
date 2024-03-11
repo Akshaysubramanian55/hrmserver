@@ -6,7 +6,7 @@ const success_function = require('../utils/response-handler').success_function;
 const error_function = require('../utils/response-handler').error_function;
 const validateadduser = require('../vallidation/adduser_validation');
 
-const jwtBlacklist = [];
+
 
 exports.addUser = async function (req, res) {
 

@@ -1,11 +1,11 @@
 const jwt = require("jsonwebtoken");
-const authcontroller = require("../controllers/authcontroller");;
+const authcontroller = require("../controllers/authcontroller");
 const error_function = require("./response-handler").error_function;
 const control_data = require("./control_data.json");
 const user = require("../db/models/users");
 const user_types = require("../db/models/user_types");
 
-exports.accesscontrol = async function (access_types, req, res) {
+exports.accesscontrol = async function (access_types, req, res,next) {
 
     try {
 
@@ -13,7 +13,9 @@ exports.accesscontrol = async function (access_types, req, res) {
             next();
         } else {
             const authHeader = req.headers["authorization"];
+            console.log("authheader",authHeader);
             const token = authHeader ? authHeader.split(" ")[1] : null;
+            console.log("token",token);
 
             if(token==null||token=="null"||token==""||token=="undefined"){
                 let response = error_function({
@@ -37,11 +39,17 @@ exports.accesscontrol = async function (access_types, req, res) {
                             let allowed=access_types.split(",")
                             .map((obj)=>control_data[obj]);
 
+                            console.log("allowed",allowed);
 
-                            let user_type_id=(await  user.findOne({_id:decoded.users_id})).user_type;
+
+                            let user_type_id=(await  user.findOne({id:decoded.user_id})).user_type;
+                            console.log("usertypeid",user_type_id);
+
+
                             let user_type=(await user_types.findOne({_id:user_type_id})).user_type;
+                            console.log("user_type",user_type)
 
-                            if(allowed&&allowed.include(user_type)){
+                            if(allowed && allowed.includes(user_type)){
 
                                 let revoked=await authcontroller.checkRevoked(req,res)
 
