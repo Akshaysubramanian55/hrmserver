@@ -91,7 +91,7 @@ exports.addUser = async function (req, res) {
                     let response = success_function({
                         statusCode: 201,
                         data: new_user,
-                        message: 'User created successfully'
+                        message: ' success'
                     });
                     res.status(response.statusCode).send(response);
                 } else {
