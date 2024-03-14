@@ -11,7 +11,7 @@ module.exports = async function validateadduser(data) {
     data.email = !isEmpty(data.email) ? data.email : "";
     data.phonenumber = !isEmpty(data.phonenumber) ? data.phonenumber : "";
     data.Address = !isEmpty(data.Address) ? data.Address : "";
-    data.password = !isEmpty(data.password) ? data.password : "";
+    // data.password = !isEmpty(data.password) ? data.password : "";
     data.pincode = !isEmpty(data.pincode) ? data.pincode : "";
 
 
@@ -46,9 +46,9 @@ module.exports = async function validateadduser(data) {
         errors.email="email must be unique"
     }
 
-    if (validator.isEmpty(data.password)) {
-        errors.password_empty="Password is required"
-    }
+    // if (validator.isEmpty(data.password)) {
+    //     errors.password_empty="Password is required"
+    // }
  
 
     if (validator.isEmpty(data.phonenumber)) {
