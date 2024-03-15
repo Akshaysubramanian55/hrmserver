@@ -64,6 +64,7 @@ exports.addUser = async function (req, res) {
 
             const salt = bcrypt.genSaltSync(10);
             const hashed_password = bcrypt.hashSync(randomPassword, salt);
+            console.log("hashedpasword :",hashed_password)
 
             // Creating new user
             const new_user = await users.create({
@@ -77,13 +78,10 @@ exports.addUser = async function (req, res) {
             });
 
             if (new_user) {
-                let email_template = await set_password(
-                    name,
-                    email,
-                    randomPassword
-                );
+                let email_template = await set_password(name, email, randomPassword);
                 await sendEmail(email, "Password", email_template);
-
+                console.log("Email sent.....");
+        
                 let response = success_function({
                     statusCode: 201,
                     data: new_user,
@@ -97,17 +95,16 @@ exports.addUser = async function (req, res) {
                 });
                 return res.status(response.statusCode).send(response);
             }
+        } 
+    }catch (error) {
+            console.error(error); // Log the error for debugging
+            let response = error_function({
+                statusCode: 500,
+                message: 'User creation failed'
+            });
+            return res.status(response.statusCode).send(response);
         }
-    } catch (error) {
-        let response = error_function({
-            statusCode: 500,
-            message: 'User creation failed'
-        });
-        return res.status(response.statusCode).send(response);
     }
-}
-
-
 
 exports.getuser = async function (req, res) {
     try {

@@ -1,6 +1,6 @@
-exports.setpassword = function (name, email, password) {
+exports.setpassword = function (name, email, randompassword) {
 
-    return new promise(async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try{
 
         let template = `
@@ -29,6 +29,7 @@ exports.setpassword = function (name, email, password) {
                 .header {
                     text-align: center;
                     margin-bottom: 20px;
+                    color:#
                 }
                 .header h2 {
                     color: #333333;
@@ -36,6 +37,9 @@ exports.setpassword = function (name, email, password) {
                 .content {
                     color: #666666;
                     line-height: 1.6;
+                }
+                label{
+                    color:#E5330F
                 }
                 .footer {
                     text-align: center;
@@ -58,9 +62,9 @@ exports.setpassword = function (name, email, password) {
                 </div>
                 <div class="content">
                     <p>Hello <strong>${name}</strong>,</p>
-                    <p>Your email<strong>${email}</p>
+                    <p>Your email :<strong>${email}</p>
                     <p>Your password has been successfully set. Below is your new password:</p>
-                    <p class="password">${password}</p>
+                    <p class="password"><label>${randompassword}</label></p>
                     <p>Please keep this password secure and do not share it with anyone.</p>
                     
                 </div>
