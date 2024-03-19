@@ -176,6 +176,8 @@ exports.forgetpasswordcontroller = async function (req, res) {
 
                     console.log(user.email)
 
+                    console.log(reset_link)
+
                     let email_template = await resetpassword(user.name, reset_link);
                     await sendEmail(email, "forgot password", email_template);
 
@@ -185,6 +187,7 @@ exports.forgetpasswordcontroller = async function (req, res) {
 
                     let response = success_function({
                         statusCode: 200,
+                       
                         message: "Email sent Successfully",
                     });
                     res.status(statusCode).send(response);
@@ -240,16 +243,30 @@ exports.passwordresetcontroller = async function (req, res) {
 
     try {
         const authHeader = req.headers["authorization"];
+
+        if(!authHeader){
+            console.log("authorization not received")
+        }
         const token = authHeader.split(" ")[1];
 
+        console.log(token)
+        
         let password = req.body.password;
 
+        
+
+        
+
         decoded = jwt.decode(token);
+
+        console.log("decoded",decoded)
 
         let user = await users.findOne({
             $and:[{_id:decoded.user_id},{password_token:token}],
 
         });
+
+        console.log("user",user)
 
         if(user){
 
@@ -257,16 +274,26 @@ exports.passwordresetcontroller = async function (req, res) {
 
             let password_hash=bcrypt.hashSync(password,salt);
 
+            console.log("harshed password :",password_hash)
+
             let data=await users.updateOne(
-                {_id:decode.user_id},
+                {_id:decoded.user_id},
                 {$set:{password:password_hash,password_token:null}}
 
             );
-            if(data.matchedCount===1&&data.modifiedCount===1){
+
+            console.log("data",data)
+
+
+            if(data.matchedCount===1 && data.modifiedCount== 1){
                 let response=success_function({
                     statusCode:200,
                     message:"password changed successfully"
+
+                    
                 });
+
+                console.log("password changeddd")
                 res.status(statusCode).send(response);
                 return;
             }else if(matchedCount===0){
@@ -285,7 +312,9 @@ exports.passwordresetcontroller = async function (req, res) {
                 return;
             }
         } else {
-            let response = error_function({ status: 403, message: "Forbidden" });
+            let response = error_function({
+                 statusCode: 403,
+                  message: "Forbidden" });
             res.status(response.statusCode).send(response);
             return;
           }
@@ -295,7 +324,7 @@ exports.passwordresetcontroller = async function (req, res) {
 
         if (process.env.NODE_ENV == "production") {
             let response = error_function({
-              status: 400,
+              statusCode: 400,
               message: error
                 ? error.message
                   ? error.message
@@ -306,7 +335,9 @@ exports.passwordresetcontroller = async function (req, res) {
             res.status(response.statusCode).send(response);
             return;
           } else {
-            let response = error_function({ status: 400, message: error });
+            let response = error_function({ 
+                statusCode: 400,
+                 message: error });
             res.status(response.statusCode).send(response);
             return;
           }
