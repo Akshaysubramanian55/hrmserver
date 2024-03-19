@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 const validator = require("validator");
 const isEmpty = require('../vallidation/isEmpty');
 const revokeuser = require('../userr/revokeuser');
+const { listeners } = require('../db/models/user_types');
 const sendEmail = require('../utils/sendemail').sendEmail;
 const resetpassword = require('../utils/resetpassword').resetpassword;
 dotenv.config();
@@ -141,210 +142,193 @@ exports.login = async function (req, res) {
 };
 
 exports.forgetpasswordcontroller = async function (req, res) {
-
     try {
-
         let email = req.body.email;
 
-
-        if (email) {
-            let user = await users.findOne({ email: email });
-
-
-
-
-            if (user) {
-
-
-                let reset_token = jwt.sign({ user_id: user._id }, process.env.PRIVATE_KEY, { expiresIn: "10m" });
-
-                let data = await users.updateOne(
-                    { email: email },
-                    { $set: { password_token: reset_token } },
-
-
-                );
-
-
-
-
-
-
-                if (data.matchedCount === 1 && data.modifiedCount == 1) {
-
-                    let reset_link = `${process.env.FRONTEND_URL}/reset-password?token=${reset_token}`;
-
-                    console.log(user.email)
-
-                    console.log(reset_link)
-
-                    let email_template = await resetpassword(user.name, reset_link);
-                    await sendEmail(email, "forgot password", email_template);
-
-
-
-
-
-                    let response = success_function({
-                        statusCode: 200,
-                       
-                        message: "Email sent Successfully",
-                    });
-                    res.status(statusCode).send(response);
-                    return;
-                } else if (data.matchedCount === 0) {
-                    let response = error_function({
-                        statusCode: 404,
-                        message: "user not found",
-                    });
-                    res.status(statusCode).send(response);
-                    return;
-                } else {
-                    let response = error_function({
-                        statusCode: 400,
-                        message: "Password reset failed",
-                    });
-                    res.status(statusCode).send(response);
-                    return;
-                }
-            } else {
-                let response = error_function({
-                    statusCode: 403,
-                    message: "forbidden",
-                });
-                res.status(statusCode).send(response);
-                return;
-            }
-
-        } else {
-            response = error_function({
+        if (!email) {
+            let response = error_function({
                 statusCode: 422,
                 message: "email is required",
             });
-            res.status(statusCode).send(response);
-            return;
+            return res.status(response.statusCode).send(response);
+        }
+
+        let user = await users.findOne({ email: email });
+        if (!user) {
+            let response = error_function({
+                statusCode: 404,
+                message: "user not found",
+            });
+            return res.status(response.statusCode).send(response);
+        }
+
+        let reset_token = jwt.sign({ user_id: user._id }, process.env.PRIVATE_KEY, { expiresIn: "10m" });
+        let data = await users.updateOne(
+            { email: email },
+            { $set: { password_token: reset_token } }
+        );
+
+        if (data.matchedCount === 1 && data.modifiedCount == 1) {
+            let reset_link = `${process.env.FRONTEND_URL}/reset-password?token=${reset_token}`;
+            let email_template = await resetpassword(user.name, reset_link);
+            await sendEmail(email, "forgot password", email_template);
+
+            let response = success_function({
+                statusCode: 200,
+                message: "Email sent Successfully",
+            });
+            return res.status(response.statusCode).send(response);
+        } else {
+            let response = error_function({
+                statusCode: 400,
+                message: "Password reset failed",
+            });
+            return res.status(response.statusCode).send(response);
         }
     } catch (error) {
-
-
-
-
         let response = error_function({
-
             statusCode: 400,
             message: "something went wrong"
         });
-        res.status(response.statusCode).send(response);
-        return;
+        return res.status(response.statusCode).send(response);
     }
 }
 
 exports.passwordresetcontroller = async function (req, res) {
-
     try {
         const authHeader = req.headers["authorization"];
 
-        if(!authHeader){
-            console.log("authorization not received")
+        if (!authHeader) {
+            let response = error_function({
+                statusCode: 401,
+                message: "Authorization header not received"
+            });
+            return res.status(response.statusCode).send(response);
         }
+
         const token = authHeader.split(" ")[1];
 
-        console.log(token)
-        
         let password = req.body.password;
 
-        
+        if (!password) {
+            let response = error_function({
+                statusCode: 422,
+                message: "Password is required"
+            });
+            return res.status(response.statusCode).send(response);
+        }
 
-        
-
-        decoded = jwt.decode(token);
-
-        console.log("decoded",decoded)
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.PRIVATE_KEY);
+        } catch (error) {
+            let response = error_function({
+                statusCode: 403,
+                message: "Invalid or expired token"
+            });
+            return res.status(response.statusCode).send(response);
+        }
 
         let user = await users.findOne({
-            $and:[{_id:decoded.user_id},{password_token:token}],
-
+            _id: decoded.user_id,
+            password_token: token
         });
 
-        console.log("user",user)
+        if (!user) {
+            let response = error_function({
+                statusCode: 404,
+                message: "User not found or invalid token"
+            });
+            return res.status(response.statusCode).send(response);
+        }
 
-        if(user){
+        let salt = bcrypt.genSaltSync(10);
+        let password_hash = bcrypt.hashSync(password, salt);
 
-            let salt=bcrypt.genSaltSync(10);
+        let data = await users.updateOne(
+            { _id: decoded.user_id },
+            { $set: { password: password_hash, password_token: null } }
+        );
 
-            let password_hash=bcrypt.hashSync(password,salt);
-
-            console.log("harshed password :",password_hash)
-
-            let data=await users.updateOne(
-                {_id:decoded.user_id},
-                {$set:{password:password_hash,password_token:null}}
-
-            );
-
-            console.log("data",data)
-
-
-            if(data.matchedCount===1 && data.modifiedCount== 1){
-                let response=success_function({
-                    statusCode:200,
-                    message:"password changed successfully"
-
-                    
-                });
-
-                console.log("password changeddd")
-                res.status(statusCode).send(response);
-                return;
-            }else if(matchedCount===0){
-                let response=error_function({
-                    statusCode:404,
-                    message:"User not found"
-                });
-                res.status(statusCode).send(response);
-                return;
-            }else{
-                let response=error_function({
-                    statusCode:400,
-                    message:"password reset failed"
-                });
-                res.status(statusCode).send(response);
-                return;
-            }
+        if (data.matchedCount === 1 && data.modifiedCount === 1) {
+            let response = success_function({
+                statusCode: 200,
+                message: "Password changed successfully"
+            });
+            return res.status(response.statusCode).send(response);
         } else {
             let response = error_function({
-                 statusCode: 403,
-                  message: "Forbidden" });
-            res.status(response.statusCode).send(response);
-            return;
-          }
-
-
-    } catch (error) {
-
-        if (process.env.NODE_ENV == "production") {
-            let response = error_function({
-              statusCode: 400,
-              message: error
-                ? error.message
-                  ? error.message
-                  : error
-                : "Something went wrong",
-            });
-      
-            res.status(response.statusCode).send(response);
-            return;
-          } else {
-            let response = error_function({ 
                 statusCode: 400,
-                 message: error });
-            res.status(response.statusCode).send(response);
-            return;
-          }
+                message: "Password reset failed"
+            });
+            return res.status(response.statusCode).send(response);
+        }
+    } catch (error) {
+        let response = error_function({
+            statusCode: 500,
+            message: "Internal server error"
+        });
+        return res.status(response.statusCode).send(response);
+    }
+}
 
+
+
+exports.changepassword = async function (req, res) {
+    const { currentpassword, newpassword } = req.body;
+    const authHeader = req.headers["authorization"];
+
+    if (!authHeader) {
+        let response = error_function({
+            statusCode: 401,
+            message: "Authorization header not received"
+        });
+        return res.status(response.statusCode).send(response);
     }
 
-}
+    try {
+        const token = authHeader.split(" ")[1];
+        const decodedToken = jwt.verify(token, process.env.PRIVATE_KEY);
+
+        const UserId = decodedToken.user_id;
+
+        const user = await users.findById(UserId);
+        if (!user) {
+            let response = error_function({
+                statusCode: 404,
+                message: "No such user"
+            });
+            return res.status(response.statusCode).send(response);
+        }
+
+        const currentpasswordvalid = await bcrypt.compare(currentpassword, user.password);
+        if (!currentpasswordvalid) {
+            let response = error_function({
+                statusCode: 400,
+                message: "Current password is incorrect"
+            });
+            return res.status(response.statusCode).send(response);
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newpassword, salt);
+
+        await users.findByIdAndUpdate(UserId, { password: hashedPassword });
+
+        let response = success_function({
+            statusCode: 200,
+            message: "Password changed successfully"
+        });
+        return res.status(response.statusCode).send(response);
+    } catch (error) {
+        let response = error_function({
+            statusCode: 500,
+            message: error.message || "Internal server error"
+        });
+        return res.status(response.statusCode).send(response);
+    }
+};
+
 
 
 
