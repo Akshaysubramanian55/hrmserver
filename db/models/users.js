@@ -10,6 +10,8 @@ const users=new mongoose.Schema(
             pincode:"string",
             password:"string",
             password_token: "string",
+            lastLogin:{ type: Date, default: null },
+            // firstLogin: { type: Boolean, default: true },
 
 
             user_type: { type: mongoose.Schema.Types.ObjectId, ref: "user_types" },

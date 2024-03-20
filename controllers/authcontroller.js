@@ -72,6 +72,22 @@ exports.login = async function (req, res) {
                     return;
                 }
 
+
+                // let data = await users.updateOne(
+                //     { email: email },
+                //     { $set: { password_token: reset_token } }
+                // console.log("Existing lastLogin field:", user.lastLogin);
+
+                let firstLogin = !user.lastLogin;
+        
+        // Update lastLogin field if it's the first login
+        if (firstLogin) {
+            await users.updateOne({ email: email }, { $set: { lastLogin: new Date() } });
+        }
+
+                    
+                
+
                 if (user) {
                     let db_password = user.password;
                     console.log("db_password : ", db_password);
@@ -83,7 +99,10 @@ exports.login = async function (req, res) {
 
                             let response = success_function({
                                 statusCode: 200,
-                                data: access_token,
+                                data: {
+                                    token: access_token,
+                                    lastLogin: user.lastLogin,
+                                },
                                 message: "Login Successful",
                             });
                             res.status(response.statusCode).send(response);
