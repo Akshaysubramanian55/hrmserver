@@ -115,8 +115,25 @@ exports.getuser = async function (req, res) {
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
 
-        const allUsers = await users.find().skip(startIndex).limit(limit);
-        const totalUsers = await users.countDocuments();
+        
+
+        const keyword=req.query.keyword
+
+        let filter={};
+
+
+        if (keyword) {
+            filter = {
+                $or: [
+                    { "name": { $regex: keyword, $options: "i" } }, // Case-insensitive search for name
+                    { "email": { $regex: keyword, $options: "i" } } // Case-insensitive search for email
+                ]
+            };
+        }
+
+        const allUsers = await users.find(filter).skip(startIndex).limit(limit);
+        const totalUsers = await users.countDocuments(filter);
+
 
 
         // const allUsers = await users.find();
