@@ -102,6 +102,7 @@ exports.login = async function (req, res) {
                                 data: {
                                     token: access_token,
                                     lastLogin: user.lastLogin,
+                                    user_type:user.user_type,
                                 },
                                 message: "Login Successful",
                             });

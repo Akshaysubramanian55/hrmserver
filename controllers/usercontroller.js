@@ -110,7 +110,7 @@ exports.getuser = async function (req, res) {
     try {
 
         const page = parseInt(req.query.page) || 1; // Current page, default to 1
-        const limit = parseInt(req.query.limit) || 5; // Items per page, default to 10
+        const limit = parseInt(req.query.limit) || 5; // Items per page, default to 5
 
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
