@@ -125,8 +125,8 @@ exports.getuser = async function (req, res) {
         if (keyword) {
             filter = {
                 $or: [
-                    { "name": { $regex: keyword, $options: "i" } }, // Case-insensitive search for name
-                    { "email": { $regex: keyword, $options: "i" } } // Case-insensitive search for email
+                    { "name": { $regex: keyword, $options: "i" } }, 
+                    { "email": { $regex: keyword, $options: "i" } } // Case-insensitive 
                 ]
             };
         }
